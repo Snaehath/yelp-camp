@@ -29,6 +29,7 @@ router.get('/new', isLoggedIn, (req,res) =>{
 router.post('/', isLoggedIn, validatecampground, catchAsync(async (req,res,next) =>{
     // if(!req.body.campground) throw new ExpressError('Invalid Campground Data','400')
     const campground = new Campground(req.body.campground)
+    campground.author = req.user._id;
     await campground.save();
     req.flash('success','Successfully made a new campground!')
     res.redirect(`/campgrounds/${campground._id}`)
@@ -36,7 +37,7 @@ router.post('/', isLoggedIn, validatecampground, catchAsync(async (req,res,next)
 
 router.get('/:id', catchAsync(async (req,res) =>{
     const {id} = req.params
-    const foundCampground = await Campground.findById(id).populate('reviews')
+    const foundCampground = await Campground.findById(id).populate('reviews').populate('author')
     if(!foundCampground) {
         req.flash('error', 'cannot find that campground!')
         return res.redirect('/campgrounds')
@@ -47,12 +48,28 @@ router.get('/:id', catchAsync(async (req,res) =>{
 router.get('/:id/edit', isLoggedIn, catchAsync(async (req,res) =>{
     const {id} = req.params
     const foundCampground = await Campground.findById(id)
+
+    if(!foundCampground) {
+        req.flash('error', 'cannot find that campground!')
+        return res.redirect('/campgrounds')
+    }
+
+    if (!foundCampground.author.equals(req.user.id)){
+        req.flash('error','You do not have premission to do that')
+        return res.redirect(`/campgrounds/${id}`)
+    }
+
     res.render('campgrounds/edit',{foundCampground})
 }))
 
 router.put('/:id', isLoggedIn, validatecampground, catchAsync(async (req,res) =>{
     const {id} = req.params
-    const campground = await Campground.findByIdAndUpdate(id,{...req.body.campground})
+    const campground = await Campground.findById(id)
+    if (!campground.author.equals(req.user._id)){
+        req.flash('error','You do not have premission to do that')
+        return res.redirect(`/campgrounds/${campground._id}`)
+    }
+    const camp = await Campground.findByIdAndUpdate(id,{...req.body.campground})
     req.flash('success','Successfully updated campground!')
     res.redirect(`/campgrounds/${campground._id}`)
 }))
