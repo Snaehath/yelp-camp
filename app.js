@@ -70,7 +70,7 @@ app.use("/campgrounds", campgroundsRoutes);
 app.use("/campgrounds/:id/reviews", reviewsRoutes);
 
 app.get("/", (req, res) => {
-  res.send("WELCOME TO HOME PAGE!!");
+  res.render("home");
 });
 
 app.all("*", (req, res, next) => {
