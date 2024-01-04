@@ -13,15 +13,17 @@ const override = require("method-override");
 const passport = require("passport");
 const localPassport = require("passport-local");
 const app = express();
+const MongoDBStore = require("connect-mongo")(session);
 
 const User = require("./models/user");
-
+const dbUrl = process.env.DB_URL;
 const userRoutes = require("./routes/user");
 const campgroundsRoutes = require("./routes/campground");
 const reviewsRoutes = require("./routes/review");
+// const dbUrl = "mongodb://127.0.0.1:27017/yelp-camp";
 
 mongoose
-  .connect("mongodb://127.0.0.1:27017/yelp-camp")
+  .connect(dbUrl)
   .then(() => {
     console.log("MONGO Connection on");
   })
@@ -37,7 +39,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use(override("_method"));
 app.use(express.static(path.join(__dirname, "public")));
 
+const store = new MongoDBStore({
+  url: dbUrl,
+  secret: "iambatman",
+  touchAfter: 24 * 60 * 60,
+});
+
+store.on("error", function (e) {
+  console.log("SESSION STORE ERROR", e);
+});
+
 const sessionConfig = {
+  store,
+  name: "session",
   secret: "iambatman",
   resave: false,
   saveUninitialized: true,
