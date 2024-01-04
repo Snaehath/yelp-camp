@@ -1,21 +1,21 @@
-## Campground Web App
+# Campground Web App
 
-### Overview
+## Overview
 
-# This web application allows users to discover and review campgrounds. Users can add new campgrounds, leave reviews.
+### This web application allows users to discover and review campgrounds. Users can add new campgrounds, leave reviews.
 
-### Technologies Used
+## Technologies Used
 
-# Node.js
+### Node.js
 
-# Express.js
+### Express.js
 
-# MongoDB
+### MongoDB
 
-# EJS (Embedded JavaScript)
+### EJS (Embedded JavaScript)
 
-# Passport.js (for authentication)
+### Passport.js (for authentication)
 
-# Mongoose (ODM for MongoDB)
+### Mongoose (ODM for MongoDB)
 
-# Bootstrap (for styling)
+### Bootstrap (for styling)
